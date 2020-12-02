@@ -33,20 +33,25 @@ fn part2() {
             let splitted: Vec<&str> = line.split_whitespace().collect();
             let password: Password = splitted[2];
             let policy_letter: char = splitted[1].chars().next().unwrap();
+
             let splitted_from_to: Vec<i32> = splitted[0]
                 .split("-")
                 .map(|n| n.parse::<i32>().unwrap())
                 .collect();
-            let first_pos_matches = password
-                .chars()
-                .skip((splitted_from_to[0] - 1).try_into().unwrap())
-                .next()
-                .map_or(false, |val| val == policy_letter);
-            let second_pos_matches = password
-                .chars()
-                .skip((splitted_from_to[1] - 1).try_into().unwrap())
-                .next()
-                .map_or(false, |val| val == policy_letter);
+            fn split_by_pos(
+                pos: usize,
+                password: &Password,
+                splitted_from_to: &Vec<i32>,
+                policy_letter: char,
+            ) -> bool {
+                password
+                    .chars()
+                    .skip((splitted_from_to[pos] - 1).try_into().unwrap())
+                    .next()
+                    .map_or(false, |val| val == policy_letter)
+            };
+            let first_pos_matches = split_by_pos(0, &password, &splitted_from_to, policy_letter);
+            let second_pos_matches = split_by_pos(1, &password, &splitted_from_to, policy_letter);
             if first_pos_matches ^ second_pos_matches {
                 1
             } else {

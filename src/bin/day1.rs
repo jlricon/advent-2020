@@ -3,7 +3,7 @@ use std::collections::HashMap;
 const SUM_UP_TO: i32 = 2020;
 fn part1(nums: &Vec<i32>) {
     for (first, val1) in nums.iter().enumerate() {
-        for (_, val2) in nums.iter().skip(first).enumerate() {
+        for val2 in nums.iter().skip(first) {
             if val1 + val2 == SUM_UP_TO {
                 println!("{}", val1 * val2);
                 return;
@@ -14,7 +14,7 @@ fn part1(nums: &Vec<i32>) {
 fn part2(nums: &Vec<i32>) {
     let mut hash = HashMap::<i32, (&i32, &i32)>::new();
     for (first, val1) in nums.iter().enumerate() {
-        for (_, val2) in nums.iter().skip(first).enumerate() {
+        for val2 in nums.iter().skip(first) {
             hash.entry(val1 + val2).or_insert((val1, val2));
         }
     }

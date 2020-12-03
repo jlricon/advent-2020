@@ -1,4 +1,3 @@
-use easybench::bench;
 use itertools::Itertools;
 use std::collections::HashMap;
 const SUM_UP_TO: i32 = 2020;

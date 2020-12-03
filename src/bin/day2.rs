@@ -4,7 +4,7 @@ type Password<'a> = &'a str;
 
 fn part1() {
     let valid_pass: i32 = include_str!("../../input/day2.txt")
-        .split("\n")
+        .lines()
         .map(|line| {
             let splitted: Vec<&str> = line.split_whitespace().collect();
             let password: Password = splitted[2];
@@ -28,7 +28,7 @@ fn part1() {
 }
 fn part2() {
     let valid_pass: i32 = include_str!("../../input/day2.txt")
-        .split("\n")
+        .lines()
         .map(|line| {
             let splitted: Vec<&str> = line.split_whitespace().collect();
             let password: Password = splitted[2];

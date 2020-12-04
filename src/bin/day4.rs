@@ -81,20 +81,14 @@ fn main() {
                 .chars()
                 .take_while(|c| c.is_numeric())
                 .collect::<String>()
-                .parse::<i32>();
+                .parse::<i32>()
+                .unwrap();
 
             let height_units: String = hgt.chars().skip_while(|c| c.is_numeric()).collect();
 
-            let valid_hgt = match num_val {
-                Ok(hgt_num) => {
-                    if height_units == "cm" {
-                        hgt_num >= 150 && hgt_num <= 193
-                    } else if height_units == "in" {
-                        hgt_num >= 59 && hgt_num <= 76
-                    } else {
-                        false
-                    }
-                }
+            let valid_hgt = match (num_val, height_units.as_ref()) {
+                (num, "cm") if num >= 150 && num <= 193 => true,
+                (num, "in") if num >= 59 && num <= 76 => true,
                 _ => false,
             };
 

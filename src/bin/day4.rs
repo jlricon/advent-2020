@@ -1,4 +1,3 @@
-const TO_VALIDATE: [&str; 7] = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 fn main() {
     let input = include_str!("../../input/day4.txt");
 
@@ -7,38 +6,29 @@ fn main() {
     let valid_passports: Vec<bool> = passports
         .iter()
         .map(|passport| {
-            TO_VALIDATE
+            ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"]
                 .iter()
                 .map(|have| passport.contains(have))
-                .all(|v| v == true)
+                .all(|v| v)
         })
         .collect();
     let part1: i32 = valid_passports.iter().map(|n| *n as i32).sum();
+    fn validate_num(passport: &str, key: &str, min: i32, max: i32) -> bool {
+        passport[passport.find(key).unwrap() + 4..]
+            .chars()
+            .take(4)
+            .collect::<String>()
+            .parse::<i32>()
+            .map_or(false, |val| val >= min && val <= max)
+    };
     let part2: i32 = passports
         .iter()
         .zip(valid_passports)
         .filter(|(_, is_valid)| *is_valid)
         .map(|(passport, _)| {
-            let valid_byr = passport[passport.find("byr").unwrap() + 4..]
-                .chars()
-                .take(4)
-                .collect::<String>()
-                .parse::<i32>()
-                .map_or(false, |val| val >= 1920 && val <= 2002);
-
-            let valid_iyr = passport[passport.find("iyr").unwrap() + 4..]
-                .chars()
-                .take(4)
-                .collect::<String>()
-                .parse::<i32>()
-                .map_or(false, |val| val >= 2010 && val <= 2020);
-
-            let valid_eyr = passport[passport.find("eyr").unwrap() + 4..]
-                .chars()
-                .take(4)
-                .collect::<String>()
-                .parse::<i32>()
-                .map_or(false, |val| val >= 2020 && val <= 2030);
+            let valid_byr = validate_num(passport, "byr", 1920, 2002);
+            let valid_iyr = validate_num(passport, "iyr", 2010, 2020);
+            let valid_eyr = validate_num(passport, "eyr", 2020, 2030);
 
             let pid: String = passport[passport.find("pid").unwrap() + 4..]
                 .chars()

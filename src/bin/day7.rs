@@ -1,17 +1,24 @@
 use std::{collections::HashMap, time::Instant};
 const GOLD: &str = "shiny gold";
-fn does_bag_contain_shiny(
-    bag_color: &str,
-    bag_to_bag_to_n: &HashMap<&str, HashMap<&str, u32>>,
+fn does_bag_contain_shiny<'a>(
+    bag_color: &'a str,
+    bag_to_bag_to_n: &HashMap<&str, HashMap<&'a str, u32>>,
+    cache: &mut HashMap<&'a str, bool>,
 ) -> bool {
-    match bag_to_bag_to_n.get(bag_color) {
+    // This memoisation makes it around 10x faster
+    if let Some(res) = cache.get(bag_color) {
+        return *res;
+    }
+    let res = match bag_to_bag_to_n.get(bag_color) {
         None => false,
         Some(contained_bags_to_n) if contained_bags_to_n.contains_key(GOLD) => true,
         Some(contained_bags_to_n) => contained_bags_to_n
             .keys()
-            .map(|k| does_bag_contain_shiny(k, bag_to_bag_to_n))
+            .map(|k| does_bag_contain_shiny(k, bag_to_bag_to_n, cache))
             .any(|v| v == true),
-    }
+    };
+    cache.insert(bag_color, res);
+    res
 }
 
 fn count_bags_inside_bag(color: &str, bag_to_bag_to_n: &HashMap<&str, HashMap<&str, u32>>) -> u32 {
@@ -51,9 +58,10 @@ fn main() {
         }
     });
     // Part 1
+    let mut cache = HashMap::new();
     let n_contain_shiny = bag_to_bag_to_n
         .keys()
-        .map(|k| does_bag_contain_shiny(k, &bag_to_bag_to_n))
+        .map(|k| does_bag_contain_shiny(k, &bag_to_bag_to_n, &mut cache))
         .filter(|v| *v == true)
         .count();
     println!("{}", n_contain_shiny);

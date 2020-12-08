@@ -98,7 +98,6 @@ fn main() {
                 prev_counters[prev_counters.len() - 2],
                 &machine.program[*prev_counters.last().unwrap()]
             );
-            dbg!(&prev_counters);
             machine.print_state();
             break;
         }

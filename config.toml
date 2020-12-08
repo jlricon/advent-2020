@@ -1,8 +1,0 @@
-[input]
-base_directory = "src/bin"
-files = [
-    {path = "day1.txt", url = "/federalist-1/", title = "Introduction"},
-]
-
-[output]
-filename = "federalist.st"

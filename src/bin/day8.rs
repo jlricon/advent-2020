@@ -96,8 +96,9 @@ fn main() {
                 "Early termination, ended up at {} coming from {} after running {:?}",
                 &machine.inst_counter,
                 prev_counters[prev_counters.len() - 2],
-                &machine.program[prev_counters.len() - 1]
+                &machine.program[*prev_counters.last().unwrap()]
             );
+            dbg!(&prev_counters);
             machine.print_state();
             break;
         }
@@ -120,5 +121,4 @@ fn main() {
         }
     }
     let instruction_causing_loop = machine.program[prev_counters.len() - 2];
-    dbg!(instruction_causing_loop);
 }

@@ -16,14 +16,14 @@ enum Errors {
 struct VM {
     inst_counter: usize,
     program: Vector<Instruction>,
-    prog_len: usize,
+    _prog_len: usize,
     acc: i32,
 }
 impl VM {
     fn safe_next_inst_counter(&self, n: i32) -> Result<usize, Errors> {
         // inst_counter cannot be <0 or > prog_len
         let proposed_value = self.inst_counter as i32 + n;
-        if proposed_value > self.prog_len as i32 {
+        if proposed_value > self._prog_len as i32 {
             Err(Errors::EndOfFile)
         } else if proposed_value < 0 {
             Err(Errors::UnsafeInstCounterSet)
@@ -32,11 +32,11 @@ impl VM {
         }
     }
     fn new(program: Vector<Instruction>) -> VM {
-        let prog_len = program.len();
+        let _prog_len = program.len();
         VM {
             inst_counter: 0,
             program,
-            prog_len,
+            _prog_len,
             acc: 0,
         }
     }
@@ -119,5 +119,5 @@ fn main() {
             }
         }
     }
-    let instruction_causing_loop = machine.program[prev_counters.len() - 2];
+    let _instruction_causing_loop = machine.program[prev_counters.len() - 2];
 }

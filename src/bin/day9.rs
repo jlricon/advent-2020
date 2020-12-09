@@ -27,12 +27,11 @@ fn main() {
         preamble.push_back(to_validate);
     };
     // Part 2
-
     let (from, to) = input
         .iter()
         .enumerate()
         .map(|(pos, _)| {
-            let post2 = input
+            input
                 .iter()
                 .skip(pos)
                 .scan(0, |acc, b| {
@@ -42,12 +41,8 @@ fn main() {
                 .enumerate()
                 .filter(|(_, v)| *v == invalid)
                 .map(|v| v.0)
-                .nth(0);
-            if let Some(p) = post2 {
-                Some((pos, p))
-            } else {
-                None
-            }
+                .nth(0)
+                .map(|p| (pos, p))
         })
         .filter(|x| !x.is_none())
         .nth(0)

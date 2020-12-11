@@ -18,16 +18,15 @@ fn main() {
     assert_eq!(diffs.iter().filter(|v| **v > 3).count(), 0);
     let one = diffs.iter().filter(|n| **n == 1).count();
     let three = diffs.iter().filter(|n| **n == 3).count();
-    let mut ways: HashMap<i32, u64> = HashMap::new();
+    let mut ways: HashMap<u64, u64> = HashMap::new();
     ways.insert(0, 1);
     for i in input.iter().skip(1) {
-        let ii: i32 = *i as i32;
-        let other_ways = *ways.entry(ii - 1).or_default()
-            + *ways.entry(ii - 2).or_default()
-            + *ways.entry(ii - 3).or_default();
-        ways.insert(ii, other_ways);
+        let other_ways = *ways.entry(i.saturating_sub(1)).or_default()
+            + *ways.entry(i.saturating_sub(2)).or_default()
+            + *ways.entry(i.saturating_sub(3)).or_default();
+        ways.insert(*i, other_ways);
     }
-    let last = *input.iter().last().unwrap() as i32;
+    let last = *input.iter().last().unwrap();
     println!("Part 1 {}*{}={}", one, three, one * three);
     println!("Part 2 {}", ways.get(&last).unwrap());
 }

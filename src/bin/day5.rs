@@ -45,6 +45,7 @@ fn main() {
         .map(|(pos, _n)| pos as usize)
         .next()
         .unwrap();
+    let part2=sorted_ids.iter().tuple_windows().map(|v)
 
     let part2 = sorted_ids[part2_pos] + 1;
 

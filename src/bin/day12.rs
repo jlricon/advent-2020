@@ -1,26 +1,18 @@
 const DIRECTIONS: [char; 4] = ['N', 'E', 'S', 'W'];
-
+const DIRECTIONS_BACK: [char; 4] = ['N', 'W', 'S', 'E'];
 fn relative_advance(facing: char, degrees: i64, counter_clock: bool) -> char {
     // Maps a facing, a rotation direction
     let angle: i64 = (degrees % 360) / 90;
-    if !counter_clock {
-        *DIRECTIONS
-            .iter()
-            .cycle()
-            .skip_while(|e| **e != facing)
-            .skip((angle) as usize)
-            .nth(0)
-            .unwrap()
+    *if !counter_clock {
+        DIRECTIONS.iter()
     } else {
-        *DIRECTIONS
-            .iter()
-            .rev()
-            .cycle()
-            .skip_while(|e| **e != facing)
-            .skip((angle) as usize)
-            .nth(0)
-            .unwrap()
+        DIRECTIONS_BACK.iter()
     }
+    .cycle()
+    .skip_while(|e| **e != facing)
+    .skip((angle) as usize)
+    .nth(0)
+    .unwrap()
 }
 fn rotate_waypoint_around_ship(
     ship_pos: (i64, i64),

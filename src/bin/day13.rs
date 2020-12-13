@@ -47,10 +47,12 @@ fn main() {
     };
 
     let candidate_n = prepared.iter().max_by_key(|v| v.1).unwrap();
-
-    let mut t = 134589502019;
+    // The prompt says the solution is greater than 100000000000000 so we find a number such that try_n below
+    // is slightly above that to avoid checking smaller Ns
+    let mut t = 1.3380076e+12 as u64;
     loop {
-        let try_n = candidate_n.1.checked_mul(t).unwrap() - candidate_n.0 as u64;
+        //
+        let try_n = candidate_n.1 * t - candidate_n.0 as u64;
         if times_for_t(try_n) {
             println!("Part 2: {}", try_n);
             break;

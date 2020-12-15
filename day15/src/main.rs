@@ -16,9 +16,9 @@ fn part1(inp: &Input, n: usize) -> Solution {
     });
     let mut last_n = *inp.last().unwrap();
     let mut prev_first_time_spoken = true;
-    for turn in inp.len() + 1..(n + 1) {
-        if prev_first_time_spoken {
-            last_n = 0;
+    for turn in inp.len() + 1..=n {
+        last_n = if prev_first_time_spoken {
+            0
         } else {
             let prev_turns = nums_to_turn
                 .get(&last_n)
@@ -26,15 +26,10 @@ fn part1(inp: &Input, n: usize) -> Solution {
                 .iter()
                 .nth_back(1)
                 .unwrap();
-            let turn_diff = turn - 1 - prev_turns;
-            last_n = turn_diff as u64;
+            (turn - 1 - prev_turns) as u64
         };
         prev_first_time_spoken = !nums_to_turn.contains_key(&last_n);
-        if let Some(entry) = nums_to_turn.get_mut(&last_n) {
-            (*entry).push(turn);
-        } else {
-            nums_to_turn.insert(last_n, vec![turn]);
-        }
+        nums_to_turn.entry(last_n).or_default().push(turn);
     }
 
     last_n

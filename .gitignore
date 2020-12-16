@@ -1,4 +1,4 @@
-/target
+target
 /ts/node_modules
 .DS_STORE
 .idea

@@ -134,7 +134,6 @@ fn part2(inp: &Input) -> Solution {
             }
         })
         .collect();
-    //let mut rulename_to_position: HashMap<&str, u64> = HashMap::new();
     // Which rules are matched by each position?
     let mut rulename_to_position: HashMap<&str, HashSet<usize>> = inp
         .rules
@@ -154,9 +153,6 @@ fn part2(inp: &Input) -> Solution {
                         .collect::<HashSet<usize>>()
                 })
                 .collect();
-            //dbg!(&positions_are_met);
-            // What position is at the intersection of all?
-            // println!("Looking at rule {} {:?}", rulename, rule,);
 
             let pre_pos = ticket_to_positions_that_match_rule
                 .into_iter()
@@ -166,9 +162,8 @@ fn part2(inp: &Input) -> Solution {
                     new_set.copied().collect::<HashSet<usize>>()
                 })
                 .unwrap();
-
+            // Make sure there is at least some stuff in pre_pos, otherwise there are no candidate positions for that entry!
             assert_ne!(pre_pos.len(), 0);
-
             (*rulename, pre_pos)
         })
         .collect();

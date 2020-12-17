@@ -201,7 +201,7 @@ fn part2(inp: &Input) -> Solution {
     rulename_to_position
         .iter()
         .filter_map(|(l, v)| {
-            if l.contains("departure") {
+            if l.starts_with("departure") {
                 let pos = *v.iter().nth(0).unwrap();
                 Some(inp.my_ticket[pos] as u64)
             } else {

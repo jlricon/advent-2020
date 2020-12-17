@@ -1,4 +1,3 @@
-use im_rc::Vector;
 use std::collections::HashSet;
 #[derive(Clone, Copy, Debug)]
 enum Instruction {
@@ -15,7 +14,7 @@ enum Errors {
 
 struct VM {
     inst_counter: usize,
-    program: Vector<Instruction>,
+    program: Vec<Instruction>,
     _prog_len: usize,
     acc: i32,
 }
@@ -31,7 +30,7 @@ impl VM {
             Ok(proposed_value as usize)
         }
     }
-    fn new(program: Vector<Instruction>) -> VM {
+    fn new(program: Vec<Instruction>) -> VM {
         let _prog_len = program.len();
         VM {
             inst_counter: 0,
@@ -71,7 +70,7 @@ impl VM {
 }
 fn main() {
     // Part 1 and 2 together. Being sneaky and manually changing the relevant input value :P
-    let input: Vector<Instruction> = include_str!("../../input/day8.txt")
+    let input: Vec<Instruction> = include_str!("../../input/day8.txt")
         .lines()
         .map(|l| {
             let mut splitted = l.split_whitespace();

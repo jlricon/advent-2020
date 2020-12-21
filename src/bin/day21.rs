@@ -1,12 +1,10 @@
 use im_rc::{HashMap, HashSet};
-
 type Allergen = String;
 type Ingredient = String;
 use itertools::Itertools;
 struct Input {
     inp: Vec<(HashSet<Ingredient>, HashSet<Allergen>)>,
     all_allergens: HashSet<Allergen>,
-    all_ingredients: HashSet<Ingredient>,
 }
 fn solve(inp: Input) -> (usize, String) {
     // For each allergen, find
@@ -26,9 +24,9 @@ fn solve(inp: Input) -> (usize, String) {
     }
     let mut food_to_allergen = HashMap::new();
     // For each allergen, find a
-    for _ in 0..inp.all_allergens.len() {
+    while food_to_allergen.len() < inp.all_allergens.len() {
         for allergen in &inp.all_allergens {
-            let equations_for_allergen: Vec<HashSet<Ingredient>> = inp
+            let common_ingredients_not_assigned_already: Vec<_> = inp
                 .inp
                 .clone()
                 .into_iter()
@@ -39,16 +37,12 @@ fn solve(inp: Input) -> (usize, String) {
                         None
                     }
                 })
-                .collect();
-            // Merge sets
-            let common_ingredients = equations_for_allergen
-                .into_iter()
                 .fold1(|x, y| x.intersection(y))
-                .unwrap();
-            let common_ingredients_not_assigned_already: Vec<_> = common_ingredients
+                .unwrap()
                 .into_iter()
                 .filter(|v| !food_to_allergen.contains_key(v))
                 .collect();
+
             // If there is just 1 it means we kn
             if common_ingredients_not_assigned_already.len() == 1 {
                 food_to_allergen
@@ -56,22 +50,17 @@ fn solve(inp: Input) -> (usize, String) {
             }
         }
     }
-    // Now that we know for sure the ingredient->allergen mapping, we need to see for which ones we are sure
-    let other_ingredients: HashSet<String> = inp
-        .all_ingredients
-        .clone()
-        .into_iter()
-        .filter(|i| !food_to_allergen.contains_key(i))
-        .map(|v| v.clone())
-        .collect();
+
     // How many times do these appear in the recipes?
     let total_appearences: usize = inp
         .inp
         .clone()
         .into_iter()
         .map(|(ingred, _)| {
-            let inters = ingred.intersection(other_ingredients.clone());
-            inters.len()
+            ingred
+                .into_iter()
+                .filter(|i| !food_to_allergen.contains_key(i))
+                .count()
         })
         .sum();
     let sorted_foods = food_to_allergen
@@ -109,16 +98,9 @@ fn main() {
             all_allergens.insert((*v).to_string());
         })
     });
-    let mut all_ingredients = HashSet::new();
-    input.iter().for_each(|v| {
-        v.0.iter().for_each(|v| {
-            all_ingredients.insert((*v).to_string());
-        })
-    });
     let input2 = Input {
         inp: input,
         all_allergens,
-        all_ingredients,
     };
     let sol = solve(input2);
     println!("Part 1 and 2: {:?}", sol);

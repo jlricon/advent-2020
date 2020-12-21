@@ -4,20 +4,20 @@ type Ingredient = String;
 use itertools::Itertools;
 struct Input {
     inp: Vec<(HashSet<Ingredient>, HashSet<Allergen>)>,
-    all_allergens: HashSet<Allergen>,
+    all_allergens: HashSet<String>,
 }
 fn solve(inp: Input) -> (usize, String) {
     // For each allergen, find
-    let mut food_to_potential_allergen: HashMap<String, HashSet<String>> = HashMap::new();
+    let mut food_to_potential_allergen: HashMap<&String, HashSet<&String>> = HashMap::new();
     for (ing, al) in inp.inp.iter() {
         for ingredient in ing {
             for allergen in al {
                 if let Some(val) = food_to_potential_allergen.get_mut(ingredient) {
-                    val.insert(allergen.to_owned());
+                    val.insert(allergen);
                 } else {
                     let mut set = HashSet::new();
-                    set.insert(allergen.clone());
-                    food_to_potential_allergen.insert(ingredient.clone(), set);
+                    set.insert(allergen);
+                    food_to_potential_allergen.insert(&ingredient, set);
                 };
             }
         }
@@ -71,8 +71,9 @@ fn solve(inp: Input) -> (usize, String) {
 
     (total_appearences, sorted_foods)
 }
+const IN: &str = include_str!("../../input/day21.txt");
 fn main() {
-    let input: Vec<(HashSet<String>, HashSet<Allergen>)> = include_str!("../../input/day21.txt")
+    let input: Vec<(HashSet<String>, HashSet<String>)> = IN
         .lines()
         .map(|l| {
             let mut spl = l.split(" (contains ");
@@ -89,13 +90,13 @@ fn main() {
                 .split(", ")
                 .map(|v| v.to_owned())
                 .collect();
-            (ingredients, allergens)
+            (ingredients.clone(), allergens.clone())
         })
         .collect();
     let mut all_allergens: HashSet<String> = HashSet::new();
     input.iter().for_each(|v| {
         v.1.iter().for_each(|v| {
-            all_allergens.insert((*v).to_string());
+            all_allergens.insert(v.to_string());
         })
     });
     let input2 = Input {

@@ -8,7 +8,7 @@ struct Input {
     // Use a crap hash
     prev_games: HashSet<u64>,
 }
-impl Input {
+impl<'a> Input {
     fn is_over(&self) -> bool {
         if self.player1.len() == 0 || self.player2.len() == 0 {
             true
@@ -43,22 +43,20 @@ impl Input {
             prev_games: self.prev_games.clone(),
         }
     }
+    fn fancy_sum(player: &VecDeque<u8>) -> u32 {
+        player
+            .iter()
+            .rev()
+            .enumerate()
+            .map(|(pos, val)| (1 + pos) as u32 * *val as u32)
+            .sum::<u32>()
+    }
     fn get_winner_score(&self) -> u32 {
         if self.player1.len() == 0 {
             // Player 2 won
-            self.player2
-                .iter()
-                .rev()
-                .enumerate()
-                .map(|(pos, val)| (1 + pos) as u32 * *val as u32)
-                .sum::<u32>()
+            Input::fancy_sum(&self.player2)
         } else {
-            self.player1
-                .iter()
-                .rev()
-                .enumerate()
-                .map(|(pos, val)| (1 + pos) as u32 * *val as u32)
-                .sum()
+            Input::fancy_sum(&self.player1)
         }
     }
     fn been_here_before(&self) -> bool {
@@ -67,6 +65,14 @@ impl Input {
         } else {
             false
         }
+    }
+    fn construct_player<T: Iterator<Item = &'a str>>(mut inp: T) -> VecDeque<u8> {
+        inp.nth(0)
+            .unwrap()
+            .split('\n')
+            .skip(1)
+            .map(|l| l.trim().parse::<u8>().unwrap())
+            .collect()
     }
 }
 fn part1(mut input: Input) {
@@ -77,11 +83,9 @@ fn part1(mut input: Input) {
         if p1card > p2card {
             input.player1.push_back(p1card);
             input.player1.push_back(p2card);
-        } else if p2card > p1card {
+        } else {
             input.player2.push_back(p2card);
             input.player2.push_back(p1card);
-        } else {
-            panic!()
         }
     }
 
@@ -89,28 +93,26 @@ fn part1(mut input: Input) {
 }
 type PlayerOneWon = bool;
 
-fn play_round(input: Input) -> (PlayerOneWon, VecDeque<u8>) {
+fn play_round(input: Input) -> (PlayerOneWon, Input) {
     let mut round_input = input.clone();
     loop {
         if round_input.been_here_before() {
-            break (true, round_input.player1);
+            break (true, round_input);
         }
         // Add this round to the previous rounds
         round_input.add_self_player();
-
         let (p1card, p2card) = match (
             round_input.player1.iter().nth(0),
             round_input.player2.iter().nth(0),
         ) {
-            (None, Some(_)) => break (false, round_input.player2),
-            (Some(_), None) => break (true, round_input.player1),
+            (None, Some(_)) => break (false, round_input),
+            (Some(_), None) => break (true, round_input),
             (Some(u1), Some(u2)) => (*u1, *u2),
             (None, None) => panic!(),
         };
         round_input.player1.pop_front();
         round_input.player2.pop_front();
         // Determine who won the match
-
         let player_one_won = if round_input.player1.len() >= p1card as usize
             && round_input.player2.len() >= p2card as usize
         {
@@ -136,31 +138,13 @@ fn play_round(input: Input) -> (PlayerOneWon, VecDeque<u8>) {
 }
 fn part2(input: Input) {
     let res = play_round(input);
-    let summed: u32 = res
-        .1
-        .iter()
-        .rev()
-        .enumerate()
-        .map(|(a, b)| (1 + a) as u32 * *b as u32)
-        .sum();
+    let summed = res.1.get_winner_score();
     println!("Part 2: {}", summed);
 }
 fn main() {
     let mut inp = include_str!("../../input/day22.txt").split("\n\n");
-    let player1: VecDeque<u8> = inp
-        .nth(0)
-        .unwrap()
-        .split('\n')
-        .skip(1)
-        .map(|l| l.trim().parse::<u8>().unwrap())
-        .collect();
-    let player2: VecDeque<u8> = inp
-        .nth(0)
-        .unwrap()
-        .split('\n')
-        .skip(1)
-        .map(|l| l.trim().parse::<u8>().unwrap())
-        .collect();
+    let player1: VecDeque<u8> = Input::construct_player(&mut inp);
+    let player2: VecDeque<u8> = Input::construct_player(&mut inp);
     let og_game = HashSet::new();
 
     let input = Input {

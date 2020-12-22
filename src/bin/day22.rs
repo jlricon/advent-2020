@@ -1,11 +1,10 @@
-use im_rc::{HashSet, Vector};
-use std::hash::Hasher;
 use std::{collections::hash_map::DefaultHasher, hash::Hash};
+use std::{collections::HashSet, collections::VecDeque, hash::Hasher};
 
 #[derive(Debug, Clone)]
 struct Input {
-    player1: Vector<u64>,
-    player2: Vector<u64>,
+    player1: VecDeque<u8>,
+    player2: VecDeque<u8>,
     // Use a crap hash
     prev_games: HashSet<u64>,
 }
@@ -27,28 +26,38 @@ impl Input {
     fn add_self_player(&mut self) {
         self.prev_games.insert(self.hash_game());
     }
-    fn get_recursive_deck(&self, p1cards: u64, p2cards: u64) -> Input {
+    fn get_recursive_deck(&self, p1cards: u8, p2cards: u8) -> Input {
         Input {
-            player1: self.player1.take(p1cards as usize),
-            player2: self.player2.take(p2cards as usize),
+            player1: self
+                .player1
+                .iter()
+                .take(p1cards as usize)
+                .copied()
+                .collect(),
+            player2: self
+                .player2
+                .iter()
+                .take(p2cards as usize)
+                .copied()
+                .collect(),
             prev_games: self.prev_games.clone(),
         }
     }
-    fn get_winner_score(&self) -> u64 {
+    fn get_winner_score(&self) -> u32 {
         if self.player1.len() == 0 {
             // Player 2 won
             self.player2
                 .iter()
                 .rev()
                 .enumerate()
-                .map(|(pos, val)| (1 + pos) as u64 * val)
-                .sum()
+                .map(|(pos, val)| (1 + pos) as u32 * *val as u32)
+                .sum::<u32>()
         } else {
             self.player1
                 .iter()
                 .rev()
                 .enumerate()
-                .map(|(pos, val)| (1 + pos) as u64 * val)
+                .map(|(pos, val)| (1 + pos) as u32 * *val as u32)
                 .sum()
         }
     }
@@ -80,7 +89,7 @@ fn part1(mut input: Input) {
 }
 type PlayerOneWon = bool;
 
-fn play_round(input: Input) -> (PlayerOneWon, Vector<u64>) {
+fn play_round(input: Input) -> (PlayerOneWon, VecDeque<u8>) {
     let mut round_input = input.clone();
     loop {
         if round_input.been_here_before() {
@@ -127,30 +136,30 @@ fn play_round(input: Input) -> (PlayerOneWon, Vector<u64>) {
 }
 fn part2(input: Input) {
     let res = play_round(input);
-    let summed: u64 = res
+    let summed: u32 = res
         .1
         .iter()
         .rev()
         .enumerate()
-        .map(|(a, b)| (1 + a) as u64 * b)
+        .map(|(a, b)| (1 + a) as u32 * *b as u32)
         .sum();
     println!("Part 2: {}", summed);
 }
 fn main() {
     let mut inp = include_str!("../../input/day22.txt").split("\n\n");
-    let player1: Vector<u64> = inp
+    let player1: VecDeque<u8> = inp
         .nth(0)
         .unwrap()
         .split('\n')
         .skip(1)
-        .map(|l| l.trim().parse::<u64>().unwrap())
+        .map(|l| l.trim().parse::<u8>().unwrap())
         .collect();
-    let player2: Vector<u64> = inp
+    let player2: VecDeque<u8> = inp
         .nth(0)
         .unwrap()
         .split('\n')
         .skip(1)
-        .map(|l| l.trim().parse::<u64>().unwrap())
+        .map(|l| l.trim().parse::<u8>().unwrap())
         .collect();
     let og_game = HashSet::new();
 

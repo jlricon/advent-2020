@@ -12,16 +12,20 @@ fn solve(inp: Input) -> (usize, String) {
     for (ing, al) in inp.inp.iter() {
         for ingredient in ing {
             for allergen in al {
-                if let Some(val) = food_to_potential_allergen.get_mut(ingredient) {
-                    val.insert(allergen);
-                } else {
-                    let mut set = HashSet::new();
-                    set.insert(allergen);
-                    food_to_potential_allergen.insert(&ingredient, set);
+                match food_to_potential_allergen.get_mut(ingredient) {
+                    Some(val) => {
+                        val.insert(allergen);
+                    }
+                    None => {
+                        let mut set = HashSet::new();
+                        set.insert(allergen);
+                        food_to_potential_allergen.insert(&ingredient, set);
+                    }
                 };
             }
         }
     }
+
     let mut food_to_allergen = HashMap::new();
     // For each allergen, find a
     while food_to_allergen.len() < inp.all_allergens.len() {

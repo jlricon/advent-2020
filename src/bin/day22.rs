@@ -93,46 +93,41 @@ fn part1(mut input: Input) {
 }
 type PlayerOneWon = bool;
 
-fn play_round(input: Input) -> (PlayerOneWon, Input) {
-    let mut round_input = input.clone();
+fn play_round(mut input: Input) -> (PlayerOneWon, Input) {
     loop {
-        if round_input.been_here_before() {
-            break (true, round_input);
+        if input.been_here_before() {
+            break (true, input);
         }
         // Add this round to the previous rounds
-        round_input.add_self_player();
-        let (p1card, p2card) = match (
-            round_input.player1.iter().nth(0),
-            round_input.player2.iter().nth(0),
-        ) {
-            (None, Some(_)) => break (false, round_input),
-            (Some(_), None) => break (true, round_input),
+        input.add_self_player();
+        let (p1card, p2card) = match (input.player1.iter().nth(0), input.player2.iter().nth(0)) {
+            (None, Some(_)) => break (false, input),
+            (Some(_), None) => break (true, input),
             (Some(u1), Some(u2)) => (*u1, *u2),
             (None, None) => panic!(),
         };
-        round_input.player1.pop_front();
-        round_input.player2.pop_front();
+        input.player1.pop_front();
+        input.player2.pop_front();
         // Determine who won the match
-        let player_one_won = if round_input.player1.len() >= p1card as usize
-            && round_input.player2.len() >= p2card as usize
-        {
-            // Recursion game
-            let (player_one_won, _) = play_round(round_input.get_recursive_deck(p1card, p2card));
-            player_one_won
-        } else {
-            if p1card > p2card {
-                true
+        let player_one_won =
+            if input.player1.len() >= p1card as usize && input.player2.len() >= p2card as usize {
+                // Recursion game
+                let (player_one_won, _) = play_round(input.get_recursive_deck(p1card, p2card));
+                player_one_won
             } else {
-                false
-            }
-        };
+                if p1card > p2card {
+                    true
+                } else {
+                    false
+                }
+            };
         // Put back the cards after the match
         if player_one_won {
-            round_input.player1.push_back(p1card);
-            round_input.player1.push_back(p2card);
+            input.player1.push_back(p1card);
+            input.player1.push_back(p2card);
         } else {
-            round_input.player2.push_back(p2card);
-            round_input.player2.push_back(p1card);
+            input.player2.push_back(p2card);
+            input.player2.push_back(p1card);
         }
     }
 }

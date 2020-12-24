@@ -42,7 +42,7 @@ fn main() {
     // We start at false, which represents white
     let mut coords: HashMap<(i32, i32), bool> = HashMap::new();
     // Fill time!
-    for (i, j) in (-200..200).cartesian_product(-200..200) {
+    for (i, j) in (-100..100).cartesian_product(-100..100) {
         coords.insert((i, j), false);
     }
     for line in inp {

@@ -16,45 +16,27 @@ fn main() {
     let inp: Vec<Vec<Direction>> = include_str!("../../input/day24.txt")
         .lines()
         .map(|l| {
-            let mut crs = l.chars().chain(vec![' ']);
-            let mut res = vec![];
-            let mut curr = crs.next().unwrap();
-            while let Some(c) = crs.next() {
+            let mut result = vec![];
+            let mut crs = l.chars();
+            while let Some(direction) = crs.next() {
                 // println!("Parting {} {}", curr, c);
-                let maybe_next = match (curr, c) {
-                    ('s', 'e') => {
-                        res.push(Direction::Southeast);
-                        crs.next()
+                let to_push = match direction {
+                    'w' => Direction::West,
+                    'e' => Direction::East,
+                    _ => {
+                        let direction2 = crs.next().unwrap();
+                        match (direction, direction2) {
+                            ('n', 'w') => Direction::Northwest,
+                            ('n', 'e') => Direction::Northeast,
+                            ('s', 'e') => Direction::Southeast,
+                            ('s', 'w') => Direction::Southwest,
+                            _ => panic!(),
+                        }
                     }
-                    ('s', 'w') => {
-                        res.push(Direction::Southwest);
-                        crs.next()
-                    }
-                    ('n', 'e') => {
-                        res.push(Direction::Northeast);
-                        crs.next()
-                    }
-                    ('n', 'w') => {
-                        res.push(Direction::Northwest);
-                        crs.next()
-                    }
-                    ('e', other) => {
-                        res.push(Direction::East);
-                        Some(other)
-                    }
-                    ('w', other) => {
-                        res.push(Direction::West);
-                        Some(other)
-                    }
-                    ('s', other) => Some(other),
-                    _ => panic!(),
                 };
-                if let Some(l) = maybe_next {
-                    curr = l;
-                }
+                result.push(to_push);
             }
-
-            res
+            result
         })
         .collect();
     // We start at false, which represents white
